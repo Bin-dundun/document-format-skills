@@ -1350,7 +1350,7 @@ def set_font_with_quote_runs(run, font_cn, font_en, size, bold=False, revision_m
         new_run = Run(new_r, run._parent)
         new_run.text = segment
         if all(char in QUOTE_CHARS for char in segment):
-            set_font(new_run, font_cn, font_cn, size, bold=bold, revision_mode=revision_mode)
+            set_font(new_run, '宋体', '宋体', size, bold=bold, revision_mode=revision_mode)
             new_run._element.rPr.rFonts.set(qn('w:hint'), 'eastAsia')
         else:
             set_font(new_run, font_cn, font_en, size, bold=bold, revision_mode=revision_mode)
