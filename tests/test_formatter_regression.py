@@ -111,7 +111,7 @@ def test_official_format_writes_local_requirements_to_docx():
         assert indent.get(qn("w:firstLineChars")) == "200"
 
 
-def test_chinese_quotes_force_fangsong_font_slots():
+def test_chinese_quotes_force_songti_font_slots():
     with tempfile.TemporaryDirectory() as folder:
         source = Path(folder) / "source.docx"
         output = Path(folder) / "output.docx"
@@ -132,9 +132,9 @@ def test_chinese_quotes_force_fangsong_font_slots():
         assert [run.text for run in quote_runs] == ["“", "‘", "’", "”"]
         for run in quote_runs:
             r_fonts = run._element.rPr.rFonts
-            assert r_fonts.get(qn("w:eastAsia")) == "仿宋_GB2312"
-            assert r_fonts.get(qn("w:ascii")) == "仿宋_GB2312"
-            assert r_fonts.get(qn("w:hAnsi")) == "仿宋_GB2312"
+            assert r_fonts.get(qn("w:eastAsia")) == "宋体"
+            assert r_fonts.get(qn("w:ascii")) == "宋体"
+            assert r_fonts.get(qn("w:hAnsi")) == "宋体"
             assert r_fonts.get(qn("w:hint")) == "eastAsia"
 
 

@@ -59,6 +59,7 @@ The only exposed format is `official`:
 - Recipient, body, signature, date, attachment, and closing: 三号（16 pt）仿宋_GB2312; body uses two-character first-line indent and fixed 30 pt line spacing.
 - Level-1 headings: 三号（16 pt）方正黑体_GBK; level-2 headings: 三号（16 pt）楷体_GB2312.
 - Latin text: Times New Roman.
+- Chinese double and single quotation marks use the standard Chinese Songti glyphs.
 - Margins: top/bottom 25.4 mm; left/right 31.8 mm.
 - Page numbers: enabled by default, with configurable style, position, offset, and replacement behavior.
 
