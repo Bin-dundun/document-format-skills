@@ -1,94 +1,75 @@
-# 📄 document-format-skills 公文格式助手
+# document-format-skills 公文格式助手
 
-> **[中文版本 README / Chinese Version](./README_CN.md)**
->
-> 看不懂英文也没关系，请点击上面的链接查看中文版说明。
+只面向中文公文排版的命令行 Skill，用于诊断 Word 文档格式问题、修复中英文标点和空格混用、统一公文格式、处理页码和表格，并从纯文本或 Markdown 生成规范 DOCX。
 
-> 💡 **想要无需联网、一键运行修复格式的桌面应用版本？**
->
-> 现已推出 **[Document Format GUI 公文格式助手](https://github.com/KaguraNanaga/docformat-gui)** —— 无需联网、一键修复公文格式的桌面应用，小白也能轻松上手！
+## 功能
 
-A focused Word formatting toolkit for Chinese official documents used by government agencies and state-owned enterprises. Diagnose formatting issues, fix punctuation, and apply one standardized official-document style with one command. Available for Claude Code, Codex, and OpenCode.
+- 智能一键处理：标点/空格清理 + 公文格式统一。
+- 格式诊断：检查标点、序号、段落和字体问题。
+- 只保留公文格式，不提供学术论文、法律文书等其他预设。
+- 支持页码样式、位置、距版心偏移、替换已有页码，并避免覆盖非页码页脚内容。
+- 支持表格格式统一、智能对齐和 Word 修订标记。
+- Windows 下可借助 WPS Office 或 Microsoft Word 处理 `.doc` / `.wps`。
+- 支持从纯文本或 Markdown 生成并格式化 DOCX。
 
-公文格式助手是一个只面向中文公文排版的 Skill 工具包，用于诊断 Word 文档格式问题、修复中英文标点和空格混用、统一公文格式、处理页码和表格，并支持从纯文本或 Markdown 生成规范 DOCX。
+## 公文格式要求
 
-## Features
+| 项目 | 要求 |
+| --- | --- |
+| 页面 | 上下页边距 25.4mm，左右页边距 31.8mm |
+| 主标题 | 方正小标宋简体，小二号（18pt），居中 |
+| 正文 | 仿宋_GB2312，三号（16pt），首行缩进2字符，固定行距30磅 |
+| 一级标题 | 方正黑体_GBK，三号（16pt），首行缩进2字符 |
+| 二级标题 | 楷体_GB2312，三号（16pt），首行缩进2字符 |
+| 英文及数字 | Times New Roman |
+| 页码 | 默认添加，可设置样式、位置、偏移和是否替换已有页码 |
 
-- 中文用户如果不熟悉命令行，可以优先使用 [Document Format GUI 公文格式助手](https://github.com/KaguraNanaga/docformat-gui)：无需联网、一键修复公文格式。
-- Smart one-shot processing: punctuation/spacing cleanup plus formatting.
-- Format diagnosis for punctuation, numbering, paragraph, and font issues.
-- Official-document format only: 18 pt 方正小标宋简体 title; 16 pt 仿宋_GB2312 body, 方正黑体_GBK level-1 headings, and 楷体_GB2312 level-2 headings; Times New Roman for Latin text; 25.4 mm top/bottom and 31.8 mm left/right margins; exactly 30 pt line spacing; two-character body first-line indent.
-- Safer page-number handling with styles, positions, offsets, replacement control, and non-page footer protection.
-- Table normalization with optional smart alignment.
-- Word revision marks for supported formatting changes.
-- macOS font fallback for common Chinese official-document fonts.
-- `.doc` / `.wps` conversion on Windows when WPS Office or Microsoft Word is installed.
-- Plain text or Markdown to formatted DOCX.
-
-## Requirements
+## 环境要求
 
 - Python 3.8+
 - `python-docx`
-- `pywin32` only for `.doc/.wps` conversion on Windows
+- Windows 下处理 `.doc/.wps` 需要 `pywin32`、WPS Office 或 Microsoft Word
 
-Use `uv` for ad-hoc runs:
+推荐使用 `uv` 临时安装依赖：
 
 ```bash
 uv run --with python-docx python scripts/process.py --help
 ```
 
-For Windows `.doc/.wps` conversion:
+## 快速开始
 
-```bash
-uv run --with python-docx --with pywin32 python scripts/process.py --help
-```
-
-## Quick Start
-
-## Official-document format requirements
-
-| Element | Requirement |
-| --- | --- |
-| Page margins | 25.4 mm top/bottom; 31.8 mm left/right |
-| Main title | 方正小标宋简体, 小二号 (18 pt), centered |
-| Body | 仿宋_GB2312, 三号 (16 pt), two-character first-line indent, fixed 30 pt line spacing |
-| Level-1 heading | 方正黑体_GBK, 三号 (16 pt), two-character first-line indent |
-| Level-2 heading | 楷体_GB2312, 三号 (16 pt), two-character first-line indent |
-| Latin text and digits | Times New Roman |
-| Page numbers | Enabled by default; style, position, offset, and replacement can be configured |
-
-Smart cleanup:
+智能一键处理：
 
 ```bash
 uv run --with python-docx python scripts/process.py smart input.docx output.docx --preset official
 ```
 
-Analyze only:
+只做诊断：
 
 ```bash
 uv run --with python-docx python scripts/process.py analyze input.docx
 uv run --with python-docx python scripts/process.py analyze input.docx --json
 ```
 
-Punctuation and spacing only:
+只修复标点和空格：
 
 ```bash
 uv run --with python-docx python scripts/process.py punctuation input.docx output.docx --space-mode keep_en_boundary
 ```
 
-Formatting only:
+只应用公文格式：
 
 ```bash
 uv run --with python-docx python scripts/process.py format input.docx output.docx --preset official
 ```
 
-Create a formatted DOCX from Markdown or text:
+从 Markdown 或纯文本生成格式化 DOCX：
 
 ```bash
-uv run --with python-docx python scripts/from_text.py input.md output.docx --title "Work Plan"
+uv run --with python-docx python scripts/from_text.py input.md output.docx --title "工作方案"
 ```
 
-## Useful Options
+## 常用参数
 
 ```bash
 --preset official
@@ -101,23 +82,22 @@ uv run --with python-docx python scripts/from_text.py input.md output.docx --tit
 --space-mode remove_all|keep_en_boundary|keep_all
 ```
 
-## Scripts
+## 脚本说明
 
-| Script | Purpose |
+| 脚本 | 用途 |
 | --- | --- |
-| `scripts/process.py` | Main CLI pipeline: `smart`, `analyze`, `punctuation`, `format`. |
-| `scripts/formatter.py` | Official-document formatting engine. |
-| `scripts/punctuation.py` | Punctuation and spacing fixer. |
-| `scripts/from_text.py` | Text/Markdown to DOCX generator. |
-| `scripts/analyzer.py` | Diagnostic helpers. |
-| `scripts/converter.py` | Windows `.doc/.wps` conversion helpers. |
+| `scripts/process.py` | 主入口：`smart`、`analyze`、`punctuation`、`format`。 |
+| `scripts/formatter.py` | 公文格式化引擎。 |
+| `scripts/punctuation.py` | 标点和空格修复。 |
+| `scripts/from_text.py` | 纯文本/Markdown 转 DOCX。 |
+| `scripts/analyzer.py` | 格式诊断。 |
+| `scripts/converter.py` | Windows `.doc/.wps` 转换辅助。 |
 
-## Notes
+## 注意
 
-- `.docx` is the most reliable format.
-- `.doc/.wps` requires Windows plus WPS Office or Microsoft Word.
-- Keep a backup of important documents before running automated formatting.
+- `.docx` 是最稳定的处理格式。
+- 自动排版前建议保留原文件备份。
 
-## License
+## 许可证
 
 MIT
