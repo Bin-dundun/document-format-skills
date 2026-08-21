@@ -1,6 +1,6 @@
 ---
 name: document-format-skills
-description: Chinese Word document formatting toolkit for .docx/.doc/.wps workflows. Use when Codex needs to diagnose document formatting, fix mixed Chinese/English punctuation and spacing, apply official/academic/legal/custom presets, normalize tables and page numbers, preserve or output Word revision marks, convert plain text or Markdown into formatted DOCX, or batch/script document cleanup for Chinese official documents.
+description: Chinese official-document formatting toolkit for .docx/.doc/.wps workflows. Use when Codex needs to diagnose and format Chinese government-style documents, fix mixed Chinese/English punctuation and spacing, normalize tables and page numbers, preserve or output Word revision marks, or convert plain text or Markdown into an official-format DOCX.
 ---
 
 # Document Format Skills
@@ -45,7 +45,7 @@ uv run --with python-docx --with pywin32 python scripts/process.py smart input.w
 | Script | Use |
 | --- | --- |
 | `scripts/process.py` | One-shot CLI for `smart`, `analyze`, `punctuation`, and `format`; handles `.doc/.wps` conversion on Windows. |
-| `scripts/formatter.py` | Apply formatting presets, custom JSON settings, page numbers, table cleanup, revision marks, macOS font fallback. |
+| `scripts/formatter.py` | Apply the official-document format, page numbers, table cleanup, revision marks, and macOS font fallback. |
 | `scripts/punctuation.py` | Fix punctuation while preserving run formatting; supports spacing strategies. |
 | `scripts/from_text.py` | Create a DOCX from `.txt` or Markdown, then optionally run smart formatting. |
 | `scripts/analyzer.py` | Lower-level diagnostic script. |
@@ -53,17 +53,18 @@ uv run --with python-docx --with pywin32 python scripts/process.py smart input.w
 
 ## Formatting Options
 
-Built-in presets:
+The only exposed format is `official`:
 
-- `official`: Local official-document preset: 18 pt 方正小标宋简体 title; 16 pt 仿宋_GB2312 body, 方正黑体_GBK level-1 headings, and 楷体_GB2312 level-2 headings; Times New Roman for Latin text; 25.4 mm top/bottom and 31.8 mm left/right margins; exactly 30 pt line spacing; two-character body first-line indent.
-- `academic`: academic paper formatting.
-- `legal`: legal document formatting.
-- `custom`: read the active desktop custom preset when available.
+- Main title: 小二号（18 pt）方正小标宋简体, centered.
+- Recipient, body, signature, date, attachment, and closing: 三号（16 pt）仿宋_GB2312; body uses two-character first-line indent and fixed 30 pt line spacing.
+- Level-1 headings: 三号（16 pt）方正黑体_GBK; level-2 headings: 三号（16 pt）楷体_GB2312.
+- Latin text: Times New Roman.
+- Margins: top/bottom 25.4 mm; left/right 31.8 mm.
+- Page numbers: enabled by default, with configurable style, position, offset, and replacement behavior.
 
 Useful flags:
 
 ```bash
---custom-settings path.json
 --revision
 --deep-clean
 --smart-table-align
@@ -73,8 +74,6 @@ Useful flags:
 --page-number-offset-mm 7
 --no-bold-serial
 ```
-
-`--custom-settings` accepts desktop schema v2 config files, exported preset files shaped as `{"preset": {...}}`, or plain preset/override JSON. For non-custom presets, the JSON is merged over the selected preset.
 
 ## Punctuation And Spacing
 
