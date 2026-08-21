@@ -432,38 +432,6 @@ PRESETS = {
             'indent': 32,
         },
     },
-    'academic': {
-        'name': '学术论文格式',
-        'deep_clean': False,
-        'page': {'top': 2.5, 'bottom': 2.5, 'left': 2.5, 'right': 2.5},
-        'title': {'font_cn': '黑体', 'font_en': 'Times New Roman', 'size': 18, 'bold': True, 'align': 'center', 'indent': 0},
-        'recipient': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 12, 'bold': False, 'align': 'left', 'indent': 0},
-        'heading1': {'font_cn': '黑体', 'font_en': 'Times New Roman', 'size': 15, 'bold': True, 'align': 'left', 'indent': 0},
-        'heading2': {'font_cn': '黑体', 'font_en': 'Times New Roman', 'size': 14, 'bold': True, 'align': 'left', 'indent': 0},
-        'heading3': {'font_cn': '黑体', 'font_en': 'Times New Roman', 'size': 12, 'bold': False, 'align': 'left', 'indent': 0},
-        'heading4': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 12, 'bold': False, 'align': 'left', 'indent': 0},
-        'body': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 12, 'bold': False, 'align': 'justify', 'indent': 24, 'line_spacing': None},
-        'signature': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 12, 'bold': False, 'align': 'right', 'indent': 0},
-        'date': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 12, 'bold': False, 'align': 'right', 'indent': 0},
-        'attachment': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 12, 'bold': False, 'align': 'justify', 'indent': 0},
-        'closing': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 12, 'bold': False, 'align': 'left', 'indent': 24},
-    },
-    'legal': {
-        'name': '法律文书格式',
-        'deep_clean': False,
-        'page': {'top': 3.0, 'bottom': 2.5, 'left': 3.0, 'right': 2.5},
-        'title': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 22, 'bold': True, 'align': 'center', 'indent': 0},
-        'recipient': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 14, 'bold': False, 'align': 'left', 'indent': 0},
-        'heading1': {'font_cn': '黑体', 'font_en': 'Times New Roman', 'size': 14, 'bold': False, 'align': 'left', 'indent': 0},
-        'heading2': {'font_cn': '黑体', 'font_en': 'Times New Roman', 'size': 14, 'bold': False, 'align': 'left', 'indent': 0},
-        'heading3': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 14, 'bold': False, 'align': 'left', 'indent': 0},
-        'heading4': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 14, 'bold': False, 'align': 'left', 'indent': 0},
-        'body': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 14, 'bold': False, 'align': 'justify', 'indent': 28, 'line_spacing': None},
-        'signature': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 14, 'bold': False, 'align': 'right', 'indent': 0},
-        'date': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 14, 'bold': False, 'align': 'right', 'indent': 0},
-        'attachment': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 14, 'bold': False, 'align': 'justify', 'indent': 0},
-        'closing': {'font_cn': '宋体', 'font_en': 'Times New Roman', 'size': 14, 'bold': False, 'align': 'left', 'indent': 28},
-    },
 }
 
 
@@ -1687,26 +1655,14 @@ def format_document(input_path, output_path, preset_name='official', progress_ca
     """
     _revision_counter[0] = 0   # 每篇文档从 1 开始计 ID
 
-    # 处理自定义预设
-    if preset_name == 'custom' and custom_settings:
-        preset = deepcopy(custom_settings)
-        logger.info(f'Preset: {preset.get("name", "自定义格式")}')
-    elif preset_name == 'custom':
-        preset = load_custom_preset()
-        if preset is None:
-            logger.warning('Custom preset not found, using official preset')
-            preset = PRESETS['official']
-        else:
-            logger.info(f'Preset: {preset.get("name", "自定义格式")}')
-    elif preset_name not in PRESETS:
-        logger.error(f'Unknown preset: {preset_name}')
-        logger.error(f'Available: {", ".join(PRESETS.keys())}')
+    if preset_name != 'official':
+        logger.error('Only the official-document preset is supported')
         sys.exit(1)
     else:
-        preset = PRESETS[preset_name]
+        preset = PRESETS['official']
         logger.info(f'Preset: {preset["name"]}')
 
-    if custom_settings and preset_name != 'custom':
+    if custom_settings:
         preset = _merge_preset_settings(preset, custom_settings)
     
     logger.info(f'Input: {input_path}')
@@ -2090,13 +2046,9 @@ def main(argv=None):
     parser.add_argument("output", help="Output .docx file")
     parser.add_argument(
         "--preset",
-        choices=tuple(PRESETS.keys()) + ("custom",),
+        choices=("official",),
         default="official",
-        help="Formatting preset to apply.",
-    )
-    parser.add_argument(
-        "--custom-settings",
-        help="JSON file containing a custom preset, exported preset, or desktop schema v2 config.",
+        help="Official-document formatting preset (the only supported preset).",
     )
     parser.add_argument(
         "--revision",
@@ -2160,10 +2112,8 @@ def main(argv=None):
 
     logging.basicConfig(level=getattr(logging, args.log_level), format='%(message)s')
 
-    custom_settings = load_preset_file(args.custom_settings) if args.custom_settings else None
+    custom_settings = None
     overrides = _build_cli_overrides(args)
-    if args.preset == 'custom' and overrides and custom_settings is None:
-        custom_settings = load_custom_preset() or deepcopy(PRESETS['official'])
     if overrides:
         custom_settings = _merge_preset_settings(custom_settings or {}, overrides)
 

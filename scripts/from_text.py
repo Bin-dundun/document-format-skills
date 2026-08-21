@@ -22,8 +22,6 @@ from scripts.formatter import (  # noqa: E402
     PRESETS,
     _merge_preset_settings,
     format_document,
-    load_custom_preset,
-    load_preset_file,
 )
 from scripts.punctuation import process_document as fix_punctuation  # noqa: E402
 
@@ -217,10 +215,8 @@ def _format_overrides(args):
 
 
 def _load_custom_settings(args):
-    settings = load_preset_file(args.custom_settings) if args.custom_settings else None
+    settings = None
     overrides = _format_overrides(args)
-    if args.preset == "custom" and overrides and settings is None:
-        settings = load_custom_preset() or deepcopy(PRESETS["official"])
     if overrides:
         settings = _merge_preset_settings(settings or {}, overrides)
     return settings
@@ -291,11 +287,10 @@ def main(argv=None):
     )
     parser.add_argument(
         "--preset",
-        choices=tuple(PRESETS.keys()) + ("custom",),
+        choices=("official",),
         default="official",
-        help="Formatting preset.",
+        help="Official-document formatting preset (the only supported preset).",
     )
-    parser.add_argument("--custom-settings", help="Custom preset/config JSON file")
     parser.add_argument("--revision", action="store_true", help="Output supported formatting changes as revisions")
     parser.add_argument("--no-bold-serial", action="store_true", help="Do not bold 一是/二是 body prefixes")
     parser.add_argument("--deep-clean", action="store_true", help="Clear inherited formatting before applying preset")

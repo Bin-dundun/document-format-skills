@@ -8,11 +8,9 @@
 
 - 智能一键处理：标点/空格清理 + 文档格式统一。
 - 格式诊断：检查标点、序号、段落、字体问题。
-- 内置公文、学术论文、法律文书预设。
-- 本机公文预设：大标题为方正小标宋简体小二号，正文为仿宋_GB2312三号，一级标题为方正黑体_GBK三号，二级标题为楷体_GB2312三号，英文为 Times New Roman；上下页边距25.4mm、左右31.8mm，固定行距30磅，正文首行缩进2字符。
+- 只保留公文格式：大标题为方正小标宋简体小二号，正文为仿宋_GB2312三号，一级标题为方正黑体_GBK三号，二级标题为楷体_GB2312三号，英文为 Times New Roman；上下页边距25.4mm、左右31.8mm，固定行距30磅，正文首行缩进2字符。
 - 页码支持样式、位置、距版心偏移、替换已有页码，并避免覆盖非页码页脚内容。
 - 表格格式统一，支持可选的智能对齐。
-- 支持桌面端 schema v2 自定义配置和导出的 preset JSON。
 - 支持输出 Word 修订标记。
 - 支持 macOS 常用中文公文字体回退。
 - Windows 下可借助 WPS Office 或 Microsoft Word 处理 `.doc` / `.wps`。
@@ -37,6 +35,18 @@ uv run --with python-docx --with pywin32 python scripts/process.py --help
 ```
 
 ## 快速开始
+
+## 公文格式要求
+
+| 项目 | 要求 |
+| --- | --- |
+| 页面 | 上下页边距 25.4mm，左右页边距 31.8mm |
+| 主标题 | 方正小标宋简体，小二号（18pt），居中 |
+| 正文 | 仿宋_GB2312，三号（16pt），首行缩进2字符，固定行距30磅 |
+| 一级标题 | 方正黑体_GBK，三号（16pt），首行缩进2字符 |
+| 二级标题 | 楷体_GB2312，三号（16pt），首行缩进2字符 |
+| 英文及数字 | Times New Roman |
+| 页码 | 默认添加，可设置样式、位置、偏移和是否替换已有页码 |
 
 智能一键处理：
 
@@ -72,8 +82,7 @@ uv run --with python-docx python scripts/from_text.py input.md output.docx --tit
 ## 常用参数
 
 ```bash
---preset official|academic|legal|custom
---custom-settings path.json
+--preset official
 --revision
 --deep-clean
 --smart-table-align
@@ -83,14 +92,12 @@ uv run --with python-docx python scripts/from_text.py input.md output.docx --tit
 --space-mode remove_all|keep_en_boundary|keep_all
 ```
 
-`--custom-settings` 支持三类 JSON：桌面端 schema v2 配置、形如 `{"preset": {...}}` 的导出预设、普通 preset/override 字典。非 `custom` 预设下会把 JSON 合并到所选预设上。
-
 ## 脚本说明
 
 | 脚本 | 用途 |
 | --- | --- |
 | `scripts/process.py` | 主入口：`smart`、`analyze`、`punctuation`、`format`。 |
-| `scripts/formatter.py` | 格式化引擎和预设处理。 |
+| `scripts/formatter.py` | 公文格式化引擎。 |
 | `scripts/punctuation.py` | 标点和空格修复。 |
 | `scripts/from_text.py` | 纯文本/Markdown 转 DOCX。 |
 | `scripts/analyzer.py` | 格式诊断。 |

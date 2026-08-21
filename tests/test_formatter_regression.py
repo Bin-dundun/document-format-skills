@@ -151,7 +151,7 @@ def test_page_number_styles_and_replacement():
             "page_number_offset_mm": 10,
             "replace_existing_page_number": True,
         })
-        format_document(str(source), str(output), preset_name="custom", custom_settings=custom)
+        format_document(str(source), str(output), preset_name="official", custom_settings=custom)
 
         result = Document(output)
         section = result.sections[0]

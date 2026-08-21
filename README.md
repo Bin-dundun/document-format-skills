@@ -8,20 +8,18 @@
 >
 > 现已推出 **[Document Format GUI 公文格式助手](https://github.com/KaguraNanaga/docformat-gui)** —— 无需联网、一键修复公文格式的桌面应用，小白也能轻松上手！
 
-A Word document formatting toolkit for Chinese official documents for the government, CCP (China Communist Party), and the state-owned enterprises. Diagnose formatting issues, fix punctuation, and apply standardized styles with one command. Available for Claude Code, Codex, and OpenCode.
+A focused Word formatting toolkit for Chinese official documents used by government agencies and state-owned enterprises. Diagnose formatting issues, fix punctuation, and apply one standardized official-document style with one command. Available for Claude Code, Codex, and OpenCode.
 
-公文格式助手是一个面向中文公文排版的 Skill 工具包，用于诊断 Word 文档格式问题、修复中英文标点和空格混用、统一公文/论文/法律文书格式、处理页码和表格，并支持从纯文本或 Markdown 生成规范 DOCX。
+公文格式助手是一个只面向中文公文排版的 Skill 工具包，用于诊断 Word 文档格式问题、修复中英文标点和空格混用、统一公文格式、处理页码和表格，并支持从纯文本或 Markdown 生成规范 DOCX。
 
 ## Features
 
 - 中文用户如果不熟悉命令行，可以优先使用 [Document Format GUI 公文格式助手](https://github.com/KaguraNanaga/docformat-gui)：无需联网、一键修复公文格式。
 - Smart one-shot processing: punctuation/spacing cleanup plus formatting.
 - Format diagnosis for punctuation, numbering, paragraph, and font issues.
-- Official, academic, legal, and custom presets.
-- Local official preset: 18 pt 方正小标宋简体 title; 16 pt 仿宋_GB2312 body, 方正黑体_GBK level-1 headings, and 楷体_GB2312 level-2 headings; Times New Roman for Latin text; 25.4 mm top/bottom and 31.8 mm left/right margins; exactly 30 pt line spacing; two-character body first-line indent.
+- Official-document format only: 18 pt 方正小标宋简体 title; 16 pt 仿宋_GB2312 body, 方正黑体_GBK level-1 headings, and 楷体_GB2312 level-2 headings; Times New Roman for Latin text; 25.4 mm top/bottom and 31.8 mm left/right margins; exactly 30 pt line spacing; two-character body first-line indent.
 - Safer page-number handling with styles, positions, offsets, replacement control, and non-page footer protection.
 - Table normalization with optional smart alignment.
-- Custom settings compatible with the desktop app schema v2 and exported preset JSON.
 - Word revision marks for supported formatting changes.
 - macOS font fallback for common Chinese official-document fonts.
 - `.doc` / `.wps` conversion on Windows when WPS Office or Microsoft Word is installed.
@@ -46,6 +44,18 @@ uv run --with python-docx --with pywin32 python scripts/process.py --help
 ```
 
 ## Quick Start
+
+## Official-document format requirements
+
+| Element | Requirement |
+| --- | --- |
+| Page margins | 25.4 mm top/bottom; 31.8 mm left/right |
+| Main title | 方正小标宋简体, 小二号 (18 pt), centered |
+| Body | 仿宋_GB2312, 三号 (16 pt), two-character first-line indent, fixed 30 pt line spacing |
+| Level-1 heading | 方正黑体_GBK, 三号 (16 pt), two-character first-line indent |
+| Level-2 heading | 楷体_GB2312, 三号 (16 pt), two-character first-line indent |
+| Latin text and digits | Times New Roman |
+| Page numbers | Enabled by default; style, position, offset, and replacement can be configured |
 
 Smart cleanup:
 
@@ -81,8 +91,7 @@ uv run --with python-docx python scripts/from_text.py input.md output.docx --tit
 ## Useful Options
 
 ```bash
---preset official|academic|legal|custom
---custom-settings path.json
+--preset official
 --revision
 --deep-clean
 --smart-table-align
@@ -92,14 +101,12 @@ uv run --with python-docx python scripts/from_text.py input.md output.docx --tit
 --space-mode remove_all|keep_en_boundary|keep_all
 ```
 
-`--custom-settings` accepts desktop schema v2 config files, exported preset files like `{"preset": {...}}`, or plain preset/override JSON.
-
 ## Scripts
 
 | Script | Purpose |
 | --- | --- |
 | `scripts/process.py` | Main CLI pipeline: `smart`, `analyze`, `punctuation`, `format`. |
-| `scripts/formatter.py` | Formatting engine and preset handling. |
+| `scripts/formatter.py` | Official-document formatting engine. |
 | `scripts/punctuation.py` | Punctuation and spacing fixer. |
 | `scripts/from_text.py` | Text/Markdown to DOCX generator. |
 | `scripts/analyzer.py` | Diagnostic helpers. |
