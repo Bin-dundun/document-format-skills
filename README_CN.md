@@ -46,7 +46,7 @@ uv run --with python-docx --with pywin32 python scripts/process.py --help
 | 一级标题 | 方正黑体_GBK，三号（16pt），首行缩进2字符 |
 | 二级标题 | 楷体_GB2312，三号（16pt），首行缩进2字符 |
 | 英文及数字 | Times New Roman |
-| 中文双引号、单引号 | 宋体中文引号字形 |
+| 行距 | 全文全选后固定值30磅 |
 | 页码 | 默认添加，可设置样式、位置、偏移和是否替换已有页码 |
 
 智能一键处理：
