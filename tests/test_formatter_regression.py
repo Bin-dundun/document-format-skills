@@ -159,6 +159,13 @@ def test_official_page_number_outside_spacing_and_offset():
     assert _footer_text(section.footer).endswith(" —　")
     assert _footer_text(section.even_page_footer).startswith("　— ")
 
+    for paragraph in (section.footer.paragraphs[0], section.even_page_footer.paragraphs[0]):
+        for run in paragraph.runs:
+            r_fonts = run._element.rPr.rFonts if run._element.rPr is not None else None
+            if r_fonts is not None:
+                assert r_fonts.get(qn("w:eastAsia")) == "Times New Roman"
+                assert r_fonts.get(qn("w:ascii")) == "Times New Roman"
+
 
 def test_page_number_styles_and_replacement():
     with tempfile.TemporaryDirectory() as folder:

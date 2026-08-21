@@ -47,6 +47,7 @@ uv run --with python-docx --with pywin32 python scripts/process.py --help
 | 二级标题 | 楷体_GB2312，三号（16pt），首行缩进2字符 |
 | 英文及数字 | Times New Roman |
 | 行距 | 全文全选后固定值30磅 |
+| 页码数字 | Times New Roman |
 | 页码 | 默认添加，可设置样式、位置、偏移和是否替换已有页码 |
 
 智能一键处理：

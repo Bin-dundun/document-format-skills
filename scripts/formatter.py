@@ -315,7 +315,7 @@ PRESETS = {
         'name': '公文格式',
         'deep_clean': False,
         'page_number': True,
-        'page_number_font': '宋体',
+        'page_number_font': 'Times New Roman',
         'page_number_size': 14,
         'page_number_style': 'dash',
         'page_number_position': 'outside',
@@ -1516,7 +1516,7 @@ def format_paragraph(para, fmt, para_type, line_spacing_pt=28, first_line_bold=F
 
 def add_page_number(
     doc,
-    font_name="宋体",
+    font_name="Times New Roman",
     font_size=14,
     style="dash",
     position="outside",
