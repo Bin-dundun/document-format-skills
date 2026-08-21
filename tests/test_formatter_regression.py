@@ -111,6 +111,33 @@ def test_official_format_writes_local_requirements_to_docx():
         assert indent.get(qn("w:firstLineChars")) == "200"
 
 
+def test_chinese_quotes_force_fangsong_font_slots():
+    with tempfile.TemporaryDirectory() as folder:
+        source = Path(folder) / "source.docx"
+        output = Path(folder) / "output.docx"
+        doc = Document()
+        doc.add_paragraph("关于中文引号格式的通知")
+        doc.add_paragraph("各单位：")
+        doc.add_paragraph("他说：“请注意‘引号中的引号’。”")
+        doc.save(source)
+
+        format_document(str(source), str(output), preset_name="official")
+
+        result = Document(output)
+        quote_para = next(paragraph for paragraph in result.paragraphs if "他说" in paragraph.text)
+        quote_runs = [
+            run for run in quote_para.runs
+            if any(char in run.text for char in "“”‘’")
+        ]
+        assert [run.text for run in quote_runs] == ["“", "‘", "’", "”"]
+        for run in quote_runs:
+            r_fonts = run._element.rPr.rFonts
+            assert r_fonts.get(qn("w:eastAsia")) == "仿宋_GB2312"
+            assert r_fonts.get(qn("w:ascii")) == "仿宋_GB2312"
+            assert r_fonts.get(qn("w:hAnsi")) == "仿宋_GB2312"
+            assert r_fonts.get(qn("w:hint")) == "eastAsia"
+
+
 def test_dotted_date_not_misidentified_as_heading():
     texts = [f"第{i}段正文。" for i in range(20)] + [
         "某某市发展和改革委员会",

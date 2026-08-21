@@ -36,6 +36,7 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.enum.table import WD_ROW_HEIGHT_RULE
 from docx.table import Table
 from docx.text.paragraph import Paragraph
+from docx.text.run import Run
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
@@ -1280,6 +1281,9 @@ def _is_structural_blank(para):
     return pPr.get('docfmt-structural-blank') == '1'
 
 
+QUOTE_CHARS = set("\u201c\u201d\u2018\u2019\u300c\u300d")
+
+
 def set_font(run, font_cn, font_en, size, bold=False, revision_mode=False):
     """
     设置字体，同时清除原有格式（斜体、下划线、颜色）
@@ -1326,6 +1330,30 @@ def set_font(run, font_cn, font_en, size, bold=False, revision_mode=False):
     # 修订模式：若有改动则嵌入 rPrChange
     if revision_mode and run._r.xml != orig_xml:
         _add_rpr_change(run, orig_rpr)
+
+
+def set_font_with_quote_runs(run, font_cn, font_en, size, bold=False, revision_mode=False):
+    """Force Chinese quotation marks to use the Chinese official font."""
+    if not any(char in run.text for char in QUOTE_CHARS):
+        set_font(run, font_cn, font_en, size, bold=bold, revision_mode=revision_mode)
+        return
+
+    segments = [segment for segment in re.split(r'([\u201c\u201d\u2018\u2019\u300c\u300d])', run.text) if segment]
+    parent = run._r.getparent()
+    insert_at = parent.index(run._r)
+    parent.remove(run._r)
+
+    for segment in segments:
+        new_r = OxmlElement('w:r')
+        parent.insert(insert_at, new_r)
+        insert_at += 1
+        new_run = Run(new_r, run._parent)
+        new_run.text = segment
+        if all(char in QUOTE_CHARS for char in segment):
+            set_font(new_run, font_cn, font_cn, size, bold=bold, revision_mode=revision_mode)
+            new_run._element.rPr.rFonts.set(qn('w:hint'), 'eastAsia')
+        else:
+            set_font(new_run, font_cn, font_en, size, bold=bold, revision_mode=revision_mode)
 
 
 def format_paragraph(para, fmt, para_type, line_spacing_pt=28, first_line_bold=False, revision_mode=False, bold_serial=True):
@@ -1442,15 +1470,15 @@ def format_paragraph(para, fmt, para_type, line_spacing_pt=28, first_line_bold=F
                 para._p.remove(run._r)
             
             run1 = para.add_run(first_part)
-            set_font(run1, fmt['font_cn'], fmt['font_en'], fmt['size'], bold=True, revision_mode=revision_mode)
+            set_font_with_quote_runs(run1, fmt['font_cn'], fmt['font_en'], fmt['size'], bold=True, revision_mode=revision_mode)
             
             if rest_part:
                 run2 = para.add_run(rest_part)
-                set_font(run2, fmt['font_cn'], fmt['font_en'], fmt['size'], fmt.get('bold', False), revision_mode=revision_mode)
+                set_font_with_quote_runs(run2, fmt['font_cn'], fmt['font_en'], fmt['size'], fmt.get('bold', False), revision_mode=revision_mode)
         else:
             # 没找到中文句号，正常处理
             for run in para.runs:
-                set_font(run, fmt['font_cn'], fmt['font_en'], fmt['size'], fmt.get('bold', False), revision_mode=revision_mode)
+                set_font_with_quote_runs(run, fmt['font_cn'], fmt['font_en'], fmt['size'], fmt.get('bold', False), revision_mode=revision_mode)
     else:
         # 正文里的序列词加粗前缀
         if bold_serial and para_type == 'body':
@@ -1471,15 +1499,15 @@ def format_paragraph(para, fmt, para_type, line_spacing_pt=28, first_line_bold=F
                 for run in list(para.runs):
                     para._p.remove(run._r)
                 run1 = para.add_run(lead)
-                set_font(run1, fmt['font_cn'], fmt['font_en'], fmt['size'], bold=True, revision_mode=revision_mode)
+                set_font_with_quote_runs(run1, fmt['font_cn'], fmt['font_en'], fmt['size'], bold=True, revision_mode=revision_mode)
                 if rest:
                     run2 = para.add_run(rest)
-                    set_font(run2, fmt['font_cn'], fmt['font_en'], fmt['size'], fmt.get('bold', False), revision_mode=revision_mode)
+                    set_font_with_quote_runs(run2, fmt['font_cn'], fmt['font_en'], fmt['size'], fmt.get('bold', False), revision_mode=revision_mode)
                 return
 
         # 正常处理
         for run in para.runs:
-            set_font(run, fmt['font_cn'], fmt['font_en'], fmt['size'], fmt.get('bold', False), revision_mode=revision_mode)
+            set_font_with_quote_runs(run, fmt['font_cn'], fmt['font_en'], fmt['size'], fmt.get('bold', False), revision_mode=revision_mode)
 
     # 修订模式：若段落格式有改动则嵌入 pPrChange
     if revision_mode and para._p.xml != orig_ppr_xml:
@@ -1904,7 +1932,7 @@ def format_document(input_path, output_path, preset_name='official', progress_ca
                     if para.text.strip():
                         is_header = (row_idx == 0 and tbl_header_bold)
                         for run in para.runs:
-                            set_font(run, tbl_font_cn, tbl_font_en, tbl_size, bold=(tbl_bold or is_header))
+                            set_font_with_quote_runs(run, tbl_font_cn, tbl_font_en, tbl_size, bold=(tbl_bold or is_header))
 
                     # 段落格式
                     para.paragraph_format.first_line_indent = Pt(tbl_first_line_indent)
